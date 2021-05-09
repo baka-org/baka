@@ -1,0 +1,12 @@
+{
+	"name": "[package-manager-name]",
+	"version": "1.0",
+	"cmd": {
+		"install": "%path% install",
+		"uninstall": "%path% uninstall",
+		"search": "%path% search"
+	},
+	"path": {
+		"all": "%path%"
+	}
+}

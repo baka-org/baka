@@ -1,0 +1,7 @@
+{
+	"language": "en-us",
+	"plugins": ["%name%-%version%"],
+	"programming_languages": {
+		"python": "pip3"
+	}
+}
