@@ -1,8 +1,5 @@
-use baka::setting::read_plugin;
-use baka::{
-    parser::parse_args,
-    setting::{read_project_setting, read_root_setting},
-};
+use baka::setting::{read_project_setting, read_root_setting};
+use baka::{parser::BakaArgs, setting::read_plugin};
 use std::env::args;
 
 fn main() {
@@ -12,7 +9,7 @@ fn main() {
     // read_plugin();
 
     let args = args();
-    let args_parsed = parse_args(args);
+    let args_parsed = BakaArgs::parse_args(args);
     println!(
         "Flags: {:?} Subcommand: {} Args: {:?}",
         args_parsed.baka_flags, args_parsed.subcommand, args_parsed.args

@@ -1,3 +1,1 @@
-pub fn match_subcommands() {
-
-}
+pub fn match_subcommands() {}
