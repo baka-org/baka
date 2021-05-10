@@ -2,19 +2,19 @@ use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct Plugin {
     pub name: String,
     pub version: String,
-    pub cmd: PluginCmd,
+    pub cmd: BTreeMap<String, PluginCmd>,
     pub path: PluginPath,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
 pub struct PluginCmd {
-    pub install: String,
-    pub uninstall: String,
-    pub search: String,
+    pub exec: Option<String>,
+    pub description: Option<String>,
+    pub help: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord)]

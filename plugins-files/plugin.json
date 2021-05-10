@@ -2,11 +2,22 @@
 	"name": "[package-manager-name]",
 	"version": "1.0",
 	"cmd": {
-		"install": "%path% install",
-		"uninstall": "%path% uninstall",
-		"search": "%path% search"
+		"install": {
+			"exec": "%path% install",
+			"description": "Sth Sth",
+			"help": "Sth Sth"
+		},
+		"uninstall": {
+			"exec": "%path% uninstall"
+		},
+		"search": {
+			"exec": "%path% search"
+		},
+		"[Custom-Command]": {
+			"exec": "%path% [Custom-Command]"
+		}
 	},
 	"path": {
-		"all": "%path%"
+		"all": ""
 	}
 }
