@@ -1,13 +1,17 @@
 use std::env::Args;
 
 pub struct BakaArgs {
-    pub baka_flags: Vec<String>,
-    pub subcommand: String,
-    pub args: Vec<String>,
+    pub baka_flags: Option<Vec<String>>,
+    pub subcommand: Option<String>,
+    pub args: Option<Vec<String>>,
 }
 
 impl BakaArgs {
-    fn new(baka_flags: Vec<String>, subcommand: String, args: Vec<String>) -> Self {
+    fn new(
+        baka_flags: Option<Vec<String>>,
+        subcommand: Option<String>,
+        args: Option<Vec<String>>,
+    ) -> Self {
         Self {
             baka_flags,
             subcommand,
@@ -21,21 +25,18 @@ impl BakaArgs {
         let mut argss: Vec<String> = Vec::new();
         let mut parsing_finished = 0;
         let mut get_flag_value = false;
-        let mut flag_temp: Vec<String> = Vec::new();
         for (i, arg) in args.enumerate() {
             if i == 0 {
                 continue;
             }
             if parsing_finished == 1 {
                 argss.push(arg);
-            } else if arg.starts_with("-") {
+            } else if i == 1 && arg.starts_with("-") {
                 get_flag_value = true;
-                flag_temp.push(arg);
+                baka_flags.push(arg);
             } else {
                 if get_flag_value {
-                    flag_temp.push(arg);
-                    baka_flags.push(flag_temp.join(" "));
-                    flag_temp = Vec::new();
+                    baka_flags.push(arg);
                     get_flag_value = false
                 } else if parsing_finished == 0 {
                     subcommand = arg;
@@ -43,6 +44,20 @@ impl BakaArgs {
                 }
             }
         }
+
+        let baka_flags = if baka_flags.is_empty() {
+            None
+        } else {
+            Some(baka_flags)
+        };
+
+        let subcommand = if subcommand.is_empty() {
+            None
+        } else {
+            Some(subcommand)
+        };
+
+        let argss = if argss.is_empty() { None } else { Some(argss) };
 
         BakaArgs::new(baka_flags, subcommand, argss)
     }
