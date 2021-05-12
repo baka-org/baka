@@ -21,6 +21,7 @@ impl BakaArgs {
         let mut argss: Vec<String> = Vec::new();
         let mut parsing_finished = 0;
         let mut get_flag_value = false;
+        let mut flag_temp: Vec<String> = Vec::new();
         for (i, arg) in args.enumerate() {
             if i == 0 {
                 continue;
@@ -29,10 +30,12 @@ impl BakaArgs {
                 argss.push(arg);
             } else if arg.starts_with("-") {
                 get_flag_value = true;
-                baka_flags.push(arg);
+                flag_temp.push(arg);
             } else {
                 if get_flag_value {
-                    baka_flags.push(arg);
+                    flag_temp.push(arg);
+                    baka_flags.push(flag_temp.join(" "));
+                    flag_temp = Vec::new();
                     get_flag_value = false
                 } else if parsing_finished == 0 {
                     subcommand = arg;
