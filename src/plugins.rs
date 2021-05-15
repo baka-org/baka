@@ -77,7 +77,7 @@ pub fn plugins() -> Vec<Plugin> {
                     settings: serde,
                 })
             } else {
-                panic!("Not Found: `.plugin.[json, toml, yaml]`");
+                panic!("Not Found: `plugin.[json, toml, yaml]`");
             }
         }
     }
