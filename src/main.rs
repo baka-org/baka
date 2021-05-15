@@ -1,22 +1,30 @@
-use baka::parser::BakaArgs;
-use baka::setting::init_config;
+use baka::{
+    parser::BakaArgs,
+    plugins::plugins,
+    setting::{init, project, root},
+};
 use std::env::{self, args};
 
 fn main() {
+    // INIT
+    init();
     // TEST
-    // read_root_setting();
-    // read_project_setting();
-    // read_plugin();
+    let root = root();
+    let project = project();
+    let plugins = plugins();
 
-    let args = args();
-    let args_parsed = BakaArgs::parse_args(args);
     println!(
-        "Flags: {:?} Subcommand: {:?} Args: {:?}",
+        "Settings:\nRootSetting: {:?}\nProjectSetting: {:?}\nPlugins: {:?}\n",
+        root, project, plugins
+    );
+
+    let args_parsed = BakaArgs::parse_args(args());
+    println!(
+        "Parser:\nFlags: {:?} Subcommand: {:?} Args: {:?}\n",
         args_parsed.baka_flags, args_parsed.subcommand, args_parsed.args
     );
-    init_config();
     println!(
-        "{}, {}",
+        "Env:\nbaka_plugins: {}\nbaka_root_setting: {}",
         env::var("baka_plugins").unwrap(),
         env::var("baka_root_setting").unwrap()
     )

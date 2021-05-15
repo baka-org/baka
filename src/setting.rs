@@ -1,11 +1,16 @@
-use std::{collections::BTreeMap, path::PathBuf};
-use std::{env, fs, io::Write, path::Path};
-
 use serde::{Deserialize, Serialize};
+use std::{
+    collections::BTreeMap,
+    env,
+    env::current_dir,
+    fs,
+    io::{Read, Write},
+    path::{Path, PathBuf},
+};
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ProjectSetting {
-    pub manager: String,
+    pub manager: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
@@ -15,29 +20,92 @@ pub struct RootSetting {
     pub programming_languages: BTreeMap<String, String>,
 }
 
-pub fn read_root_setting() {
-    let r: RootSetting = serde_json::from_str(include_str!("../settings-files/baka.json")).unwrap();
+pub fn root() -> RootSetting {
+    let env = env::var("baka_root_setting").unwrap();
+    let mut file = fs::File::open(env.clone()).unwrap();
+    let mut buf = String::new();
+    file.read_to_string(&mut buf).unwrap();
 
-    println!("{:?}", r);
+    let root = {
+        if env.ends_with("json") {
+            serde_json::from_str::<RootSetting>(buf.as_str()).unwrap()
+        } else if env.ends_with("toml") {
+            toml::from_str::<RootSetting>(buf.as_str()).unwrap()
+        } else if env.ends_with("yaml") {
+            serde_yaml::from_str::<RootSetting>(buf.as_str()).unwrap()
+        } else {
+            panic!("Error: root setting file (serde)");
+        }
+    };
+
+    root
 }
 
-pub fn read_project_setting() {
-    let r: ProjectSetting =
-        serde_json::from_str(include_str!("../settings-files/bakaconfig.json")).unwrap();
+pub fn project() -> ProjectSetting {
+    let found_path = {
+        let mut read_dir = fs::read_dir(current_dir().as_ref().unwrap()).unwrap();
 
-    println!("{:?}", r);
+        if read_dir.any(|x| x.unwrap().file_name() == ".baka.json") {
+            ".baka.json"
+        } else if read_dir.any(|x| x.unwrap().file_name() == ".baka.toml") {
+            ".baka.toml"
+        } else if read_dir.any(|x| x.unwrap().file_name() == ".baka.yaml") {
+            ".baka.yaml"
+        } else {
+            panic!("Not Found: `.baka.[json, toml, yaml]`")
+        }
+    };
+
+    let mut file = fs::File::open(found_path).unwrap();
+    let mut buf = String::new();
+    file.read_to_string(&mut buf).unwrap();
+
+    let project = {
+        if found_path.contains("json") {
+            serde_json::from_str::<ProjectSetting>(buf.as_str()).unwrap()
+        } else if found_path.contains("toml") {
+            toml::from_str::<ProjectSetting>(buf.as_str()).unwrap()
+        } else if found_path.contains("yaml") {
+            serde_yaml::from_str::<ProjectSetting>(buf.as_str()).unwrap()
+        } else {
+            panic!("Error: project setting file (serde)");
+        }
+    };
+
+    project
 }
 
-pub fn init_config() {
+pub fn init() {
     //make .baka folder
-    make_config(true, None, None, None);
+    make_file(true, None, None, None);
     //make config file (global config file)
-    make_config(true, None, Some("config"), None);
+    let check_extension = vec!["config.json", "config.toml", "config.yaml"];
+    let mut baka_folder = fs::read_dir(config_path(true, None, None).as_path()).unwrap();
+    if !baka_folder.any(|x| check_extension.contains(&x.unwrap().file_name().to_str().unwrap())) {
+        make_file(true, None, Some("config"), None);
+    }
     //make plugins folder
-    make_config(true, Some("plugins"), None, None);
+    make_file(true, Some("plugins"), None, None);
     //set baka_root_setting
     if env::var("baka_root_setting").is_err() {
-        env::set_var("baka_root_setting", config_path(true, None, Some("config")));
+        let mut baka_folder2 = fs::read_dir(config_path(true, None, None).as_path()).unwrap();
+
+        if baka_folder2.any(|x| x.unwrap().file_name().to_str() == Some("config.json")) {
+            env::set_var(
+                "baka_root_setting",
+                config_path(true, None, Some("config.json")),
+            );
+        } else if baka_folder2.any(|x| x.unwrap().file_name().to_str() == Some("config.toml")) {
+            env::set_var(
+                "baka_root_setting",
+                config_path(true, None, Some("config.toml")),
+            );
+        } else if baka_folder2.any(|x| x.unwrap().file_name().to_str() == Some("config.yaml")) {
+            env::set_var(
+                "baka_root_setting",
+                config_path(true, None, Some("config.yaml")),
+            );
+        }
     }
     //set baka_plugins
     if env::var("baka_plugins").is_err() {
@@ -58,7 +126,7 @@ fn config_path(baka_folder: bool, folder_name: Option<&str>, file_name: Option<&
 
     config_path.push(var);
 
-    if baka_folder == true {
+    if baka_folder {
         config_path.push(".baka");
     }
 
@@ -73,7 +141,7 @@ fn config_path(baka_folder: bool, folder_name: Option<&str>, file_name: Option<&
     config_path
 }
 
-pub fn make_config(
+pub fn make_file(
     baka_folder: bool,
     folder_name: Option<&str>,
     file_name: Option<&str>,
