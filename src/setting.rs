@@ -1,8 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{
     collections::BTreeMap,
-    env,
-    env::current_dir,
+    env::{self, current_dir},
     fs,
     io::{Read, Write},
     path::{Path, PathBuf},
