@@ -31,17 +31,15 @@ impl BakaArgs {
             }
             if parsing_finished == 1 {
                 argss.push(arg);
-            } else if i == 1 && arg.starts_with("-") {
+            } else if i == 1 && arg.starts_with('-') {
                 get_flag_value = true;
                 baka_flags.push(arg);
-            } else {
-                if get_flag_value {
-                    baka_flags.push(arg);
-                    get_flag_value = false
-                } else if parsing_finished == 0 {
-                    subcommand = arg;
-                    parsing_finished += 1;
-                }
+            } else if get_flag_value {
+                baka_flags.push(arg);
+                get_flag_value = false
+            } else if parsing_finished == 0 {
+                subcommand = arg;
+                parsing_finished += 1;
             }
         }
 
