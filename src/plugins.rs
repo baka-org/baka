@@ -45,13 +45,13 @@ pub fn plugins() -> Vec<Plugin> {
 
     let path = env::var("baka_plugins").unwrap();
     let read_dir = fs::read_dir(path).unwrap();
+    let check_files = vec!["plugin.json", "plugin.toml", "plugin.yaml"];
 
     for dir in read_dir.flatten() {
         let dir_plugins = fs::read_dir(dir.path()).unwrap();
 
         for dir_plugin in dir_plugins.flatten() {
             let path = dir.path();
-            let check_files = vec!["plugin.json", "plugin.toml", "plugin.yaml"];
 
             if check_files.contains(&dir_plugin.file_name().to_str().unwrap()) {
                 let mut file = fs::File::open(dir_plugin.path()).unwrap();
