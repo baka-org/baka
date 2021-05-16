@@ -21,16 +21,19 @@ pub struct RootSetting {
 
 pub fn root() -> RootSetting {
     let env = env::var("baka_root_setting").unwrap();
+    let path = PathBuf::from(env.clone());
     let mut file = fs::File::open(env.clone()).unwrap();
     let mut buf = String::new();
     file.read_to_string(&mut buf).unwrap();
 
     let root = {
-        if env.ends_with("json") {
+        let filename = path.file_name().unwrap();
+
+        if filename == "config.json" {
             serde_json::from_str::<RootSetting>(buf.as_str()).unwrap()
-        } else if env.ends_with("toml") {
+        } else if filename == "config.toml" {
             toml::from_str::<RootSetting>(buf.as_str()).unwrap()
-        } else if env.ends_with("yaml") {
+        } else if filename == "config.yaml" {
             serde_yaml::from_str::<RootSetting>(buf.as_str()).unwrap()
         } else {
             panic!("Error: root setting file (serde)");
