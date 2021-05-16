@@ -1,5 +1,6 @@
 use std::env::Args;
 
+// baka [baka_flags] [subcommand] [args...]
 pub struct BakaArgs {
     pub baka_flags: Option<Vec<String>>,
     pub subcommand: Option<String>,
@@ -58,5 +59,17 @@ impl BakaArgs {
         let argss = if argss.is_empty() { None } else { Some(argss) };
 
         BakaArgs::new(baka_flags, subcommand, argss)
+    }
+
+    pub fn baka_flags(&self) -> (&str, Option<&Self>) {
+        self.baka_flags
+            .as_ref()
+            .map_or(("", None), |f| (f[0].as_str(), Some(self)))
+    }
+
+    pub fn subcommand(&self) -> (&str, Option<Vec<String>>) {
+        self.subcommand.as_ref().map_or(("", None), |f| {
+            (f.as_str(), Some(self.args.as_ref().unwrap().to_vec()))
+        })
     }
 }

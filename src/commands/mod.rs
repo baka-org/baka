@@ -2,9 +2,15 @@ use std::process::{Child, Command};
 
 use crate::parser::BakaArgs;
 
-pub fn match_subcommands(baka: BakaArgs) {}
+pub fn match_subcommands(baka: BakaArgs) {
+    match baka.baka_flags() {
+        ("-p", Some(_)) => {}
+        ("-l", Some(_)) => {}
+        (_, _) => {}
+    }
+}
 
-fn command_output(pacakge_name: &str, subcommand: &str, args: Vec<String>) -> Child {
+fn _command_output(pacakge_name: &str, subcommand: &str, args: Vec<String>) -> Child {
     Command::new(pacakge_name)
         .arg(subcommand)
         .args(args)
