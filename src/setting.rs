@@ -9,7 +9,7 @@ use std::{
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ProjectSetting {
-    pub manager: Option<String>,
+    pub manager: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Eq)]
