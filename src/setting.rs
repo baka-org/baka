@@ -40,38 +40,42 @@ pub fn root() -> RootSetting {
     root
 }
 
-pub fn project() -> ProjectSetting {
+pub fn project() -> Option<ProjectSetting> {
     let found_path = {
         let mut read_dir = fs::read_dir(current_dir().as_ref().unwrap()).unwrap();
 
         if read_dir.any(|x| x.unwrap().file_name() == ".baka.json") {
-            ".baka.json"
+            Some(".baka.json")
         } else if read_dir.any(|x| x.unwrap().file_name() == ".baka.toml") {
-            ".baka.toml"
+            Some(".baka.toml")
         } else if read_dir.any(|x| x.unwrap().file_name() == ".baka.yaml") {
-            ".baka.yaml"
+            Some(".baka.yaml")
         } else {
-            panic!("Not Found: `.baka.[json, toml, yaml]`")
+            None
         }
     };
 
-    let mut file = fs::File::open(found_path).unwrap();
-    let mut buf = String::new();
-    file.read_to_string(&mut buf).unwrap();
+    if let Some(found_path) = found_path {
+        let mut file = fs::File::open(found_path).unwrap();
+        let mut buf = String::new();
+        file.read_to_string(&mut buf).unwrap();
 
-    let project = {
-        if found_path.contains("json") {
-            serde_json::from_str::<ProjectSetting>(buf.as_str()).unwrap()
-        } else if found_path.contains("toml") {
-            toml::from_str::<ProjectSetting>(buf.as_str()).unwrap()
-        } else if found_path.contains("yaml") {
-            serde_yaml::from_str::<ProjectSetting>(buf.as_str()).unwrap()
-        } else {
-            panic!("Error: project setting file (serde)");
-        }
-    };
+        let project = {
+            if found_path.contains("json") {
+                serde_json::from_str::<ProjectSetting>(buf.as_str()).unwrap()
+            } else if found_path.contains("toml") {
+                toml::from_str::<ProjectSetting>(buf.as_str()).unwrap()
+            } else if found_path.contains("yaml") {
+                serde_yaml::from_str::<ProjectSetting>(buf.as_str()).unwrap()
+            } else {
+                panic!("Error: project setting file (serde)");
+            }
+        };
 
-    project
+        Some(project)
+    } else {
+        None
+    }
 }
 
 const INIT_GLOBAL_CONFIG_TEXT: &str = r#"{
