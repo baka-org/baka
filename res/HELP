@@ -1,0 +1,15 @@
+Commands:
+    # found .baka.[json, toml, yaml]
+    - baka [package-manager-command] [package-manager-args]
+    # Not
+    - baka [baka-flags] [package-manager-command] [package-manager-args]
+    - baka plugin
+        - add [git-url]
+        - remove [package-manager-name]
+        - list
+    - baka help
+    - baka version
+
+baka-flags:
+    -p (package-manager-name)
+    -l (language-name)

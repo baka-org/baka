@@ -69,7 +69,10 @@ impl BakaArgs {
 
     pub fn subcommand(&self) -> (&str, Option<Vec<String>>) {
         self.subcommand.as_ref().map_or(("", None), |f| {
-            (f.as_str(), Some(self.args.as_ref().unwrap().to_vec()))
+            (
+                f.as_str(),
+                Some(self.args.as_ref().unwrap_or(&vec![String::new()]).to_vec()),
+            )
         })
     }
 }

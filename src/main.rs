@@ -1,4 +1,5 @@
 use baka::{
+    commands::match_baka_flags,
     parser::BakaArgs,
     plugins::plugins,
     setting::{init, project, root},
@@ -27,5 +28,7 @@ fn main() {
         "Env:\nbaka_plugins: {}\nbaka_root_setting: {}",
         env::var("baka_plugins").unwrap(),
         env::var("baka_root_setting").unwrap()
-    )
+    );
+
+    match_baka_flags(args_parsed);
 }
