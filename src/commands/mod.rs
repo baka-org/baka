@@ -11,11 +11,11 @@ pub fn match_baka_flags(baka: BakaArgs) {
         // Found .baka.[json, toml, yaml]
         (_, Some(_)) => unimplemented!(),
 
-        (_, _) => match_subcommands(baka),
+        (_, _) => match_subcommand(baka),
     }
 }
 
-fn match_subcommands(baka: BakaArgs) {
+fn match_subcommand(baka: BakaArgs) {
     match baka.subcommand() {
         ("plugin", Some(plugin)) => plugin_commands(plugin),
         ("help", Some(_)) => println!("{}", include_str!("../../res/HELP")),
