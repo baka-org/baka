@@ -1,6 +1,6 @@
 use std::process::{Child, Command};
 
-use crate::parser::BakaArgs;
+use crate::{parser::BakaArgs, plugins::plugins};
 
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
@@ -25,22 +25,31 @@ fn match_subcommand(baka: BakaArgs) {
 }
 
 fn plugin_commands(plugin: Vec<String>) {
-    if plugin.is_empty() || plugin.len() <= 1 {
+    if plugin.is_empty() {
         return;
     }
 
     match plugin[0].as_str() {
         "add" => unimplemented!(),
         "remove" => unimplemented!(),
-        "list" => unimplemented!(),
+        "list" => {
+            println!("Plugin list:");
+
+            for plugin in plugins() {
+                println!(
+                    " ㄴname: {}   version: {}",
+                    plugin.settings.name, plugin.settings.version
+                );
+            }
+        }
         _ => {}
     }
 }
 
-fn _command_output(pacakge_name: &str, subcommand: &str, args: Vec<String>) -> Child {
-    Command::new(pacakge_name)
+fn _command_output(program_name: &str, subcommand: &str, args: Vec<String>) -> Child {
+    Command::new(program_name)
         .arg(subcommand)
         .args(args)
         .spawn()
-        .unwrap_or_else(|_| panic!("{} command failed to start", pacakge_name))
+        .unwrap_or_else(|_| panic!("{} command failed to start", program_name))
 }

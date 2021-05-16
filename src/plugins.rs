@@ -34,8 +34,6 @@ pub struct PluginPath {
 
 #[derive(Debug, Clone)]
 pub struct Plugin {
-    pub name: String,
-    pub version: String,
     pub path: PathBuf,
     pub settings: PluginSetting,
 }
@@ -75,8 +73,6 @@ pub fn plugins() -> Vec<Plugin> {
                 };
 
                 plugins.push(Plugin {
-                    name: serde.name.clone(),
-                    version: serde.version.clone(),
                     path,
                     settings: serde,
                 })

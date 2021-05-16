@@ -22,7 +22,7 @@ pub struct RootSetting {
 pub fn root() -> RootSetting {
     let env = env::var("baka_root_setting").unwrap();
     let path = PathBuf::from(env.clone());
-    let mut file = fs::File::open(env.clone()).unwrap();
+    let mut file = fs::File::open(env).unwrap();
     let mut buf = String::new();
     file.read_to_string(&mut buf).unwrap();
 
