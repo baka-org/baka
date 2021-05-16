@@ -74,6 +74,12 @@ pub fn project() -> ProjectSetting {
     project
 }
 
+const INIT_GLOBAL_CONFIG_TEXT: &str = r#"{
+    "language": "en-us",
+    "plugins": [],
+    "programming_languages": {}
+}"#;
+
 pub fn init() {
     //make .baka folder
     make_file(true, None, None, None);
@@ -81,7 +87,12 @@ pub fn init() {
     let check_extension = vec!["config.json", "config.toml", "config.yaml"];
     let mut baka_folder = fs::read_dir(config_path(true, None, None).as_path()).unwrap();
     if !baka_folder.any(|x| check_extension.contains(&x.unwrap().file_name().to_str().unwrap())) {
-        make_file(true, None, Some("config"), None);
+        make_file(
+            true,
+            None,
+            Some("config.json"),
+            Some(INIT_GLOBAL_CONFIG_TEXT),
+        );
     }
     //make plugins folder
     make_file(true, Some("plugins"), None, None);
