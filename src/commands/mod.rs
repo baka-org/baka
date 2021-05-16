@@ -37,8 +37,8 @@ fn plugin_commands(plugin: Vec<String>) {
 
             for plugin in plugins() {
                 println!(
-                    " ㄴname: {}   version: {}",
-                    plugin.settings.name, plugin.settings.version
+                    " ㄴname: {}   version: {}   path: {}",
+                    plugin.settings.name, plugin.settings.version, plugin.path.to_string_lossy()
                 );
             }
         }
