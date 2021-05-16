@@ -48,6 +48,8 @@ pub fn plugins() -> Vec<Plugin> {
     let check_files = vec!["plugin.json", "plugin.toml", "plugin.yaml"];
 
     for dir in read_dir.flatten() {
+        if dir.file_type().unwrap().is_file() { continue; }
+
         let dir_plugins = fs::read_dir(dir.path()).unwrap();
 
         for dir_plugin in dir_plugins.flatten() {
