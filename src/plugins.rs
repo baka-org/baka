@@ -68,7 +68,7 @@ impl PluginSetting {
                     .win
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `win`"))
-            } else if cfg!(target_os = "darwin") {
+            } else if cfg!(target_os = "macos") {
                 self.path
                     .darwin
                     .as_ref()
