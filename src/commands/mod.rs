@@ -10,6 +10,7 @@ pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
         // Not found .baka.[json, toml, yaml]
         ("-p", Some(_)) => {
+            //TODO: check plugin
             if baka.subcommand.is_none() {
                 return;
             }
@@ -28,6 +29,7 @@ pub fn match_baka_flags(baka: BakaArgs) {
             }
         }
         ("-l", Some(_)) => {
+            //TODO: check plugin
             if baka.subcommand.is_none() {
                 return;
             }
@@ -60,6 +62,7 @@ fn match_subcommand(baka: BakaArgs) {
         // Found .baka.[json, toml, yaml]
         (_, _) => {
             unimplemented!("I found bug");
+            //TODO: check plugin
             /*
             if baka.subcommand.is_none() {
                 return;
