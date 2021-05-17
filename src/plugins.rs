@@ -45,34 +45,32 @@ impl PluginSetting {
         self.cmd.get_key_value(other).map(|get| {
             (
                 get.0.to_string(),
-                get.1.exec.replace("%path%", self.path.path()),
+                get.1.exec.replace("%path%", self.path()),
             )
         })
     }
-}
 
-impl PluginPath {
     pub fn path(&self) -> &str {
-        if self.all.is_none() {
+        if self.path.all.is_none() {
             if cfg!(target_os = "linux") {
-                self.linux
+                self.path.linux
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `linux`"))
             } else if cfg!(target_os = "windows") {
-                self.win
+                self.path.win
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `win`"))
             } else if cfg!(target_os = "darwin") {
-                self.darwin
+                self.path.darwin
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `darwin`"))
             } else {
-                self.other
+                self.path.other
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `other`"))
             }
         } else {
-            self.all
+            self.path.all
                 .as_ref()
                 .unwrap_or_else(|| panic!("Not found: `all`"))
         }
