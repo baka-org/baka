@@ -1,7 +1,7 @@
 use std::env::Args;
 
 // baka [baka_flags] [subcommand] [args...]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BakaArgs {
     pub baka_flags: Option<Vec<String>>,
     pub subcommand: Option<String>,

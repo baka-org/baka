@@ -15,17 +15,27 @@ pub fn match_baka_flags(baka: BakaArgs) {
                 return;
             }
 
-            let child = command_output(
-                &baka.baka_flags.unwrap()[1],
-                &baka.subcommand.as_ref().unwrap(),
-                baka.args,
-            );
-            let wait_output = child.wait_with_output();
+            let mut find_plugin = plugins()
+                .into_iter()
+                .filter(|f| f.settings.name == baka.baka_flags.as_ref().unwrap()[1]);
 
-            if let Ok(output) = wait_output {
-                println!("{}", String::from_utf8_lossy(&output.stdout));
-            } else if let Err(output) = wait_output {
-                eprintln!("Error: {}", output.to_string());
+            if let Some(plugin) = find_plugin.next() {
+                for cmd in plugin.settings.cmd {
+                    let child = command_output(
+                        &cmd.0,
+                        &baka.subcommand.as_ref().unwrap(),
+                        baka.args.clone(),
+                    );
+
+                    let wait_output = child.wait_with_output();
+
+                    if let Ok(output) = wait_output {
+                        println!("{}", String::from_utf8_lossy(&output.stdout));
+                    } else if let Err(output) = wait_output {
+                        eprintln!("Error: {}", output.to_string());
+                    }
+                }
+            } else {
             }
         }
         ("-l", Some(_)) => {
@@ -62,7 +72,7 @@ fn match_subcommand(baka: BakaArgs) {
         // Found .baka.[json, toml, yaml]
         (_, _) => {
             unimplemented!("I found bug");
-            //TODO: check plugin
+
             /*
             if baka.subcommand.is_none() {
                 return;

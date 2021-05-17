@@ -38,6 +38,24 @@ pub struct Plugin {
     pub settings: PluginSetting,
 }
 
+impl PluginPath {
+    pub fn path(self) -> String {
+        if self.all.is_none() {
+            if cfg!(target_os = "linux") {
+                self.linux.unwrap_or_else(|| panic!("Not found: `linux`"))
+            } else if cfg!(target_os = "windows") {
+                self.win.unwrap_or_else(|| panic!("Not found: `win`"))
+            } else if cfg!(target_os = "darwin") {
+                self.darwin.unwrap_or_else(|| panic!("Not found: `darwin`"))
+            } else {
+                self.other.unwrap_or_else(|| panic!("Not found: `other`"))
+            }
+        } else {
+            self.all.unwrap_or_else(|| panic!("Not found: `all`"))
+        }
+    }
+}
+
 pub fn plugins() -> Vec<Plugin> {
     let mut plugins = Vec::new();
 
