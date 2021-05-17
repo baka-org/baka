@@ -4,7 +4,7 @@ use std::{
     process::{Child, Command},
 };
 
-use crate::{parser::BakaArgs, plugins::plugins};
+use crate::{parser::BakaArgs, plugins::plugins, setting::root};
 
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
@@ -27,7 +27,26 @@ pub fn match_baka_flags(baka: BakaArgs) {
                 eprintln!("Error: {}", output.to_string());
             }
         }
-        ("-l", Some(_)) => {}
+        ("-l", Some(_)) => {
+            if baka.subcommand.is_none() {
+                return;
+            }
+
+            if let Some(lang) = root()
+                .programming_languages
+                .get(&baka.baka_flags.unwrap()[1])
+            {
+                let child =
+                    command_output(lang.as_str(), &baka.subcommand.as_ref().unwrap(), baka.args);
+                let wait_output = child.wait_with_output();
+
+                if let Ok(output) = wait_output {
+                    println!("{}", String::from_utf8_lossy(&output.stdout));
+                } else if let Err(output) = wait_output {
+                    eprintln!("Error: {}", output.to_string());
+                }
+            }
+        }
         (_, _) => match_subcommand(baka),
     }
 }
