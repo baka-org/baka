@@ -13,7 +13,11 @@ use crate::{parser::BakaArgs, plugins::plugins, setting::root};
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
         // Not found .baka.[json, toml, yaml]
-        ("-p", Some(_)) => unimplemented!(),
+        ("-p", Some(_)) => {
+            unimplemented!();
+            //let plugin = plugins();
+            //println!("{:?}", plugin[0].settings.exec("search"))
+        },
         ("-l", Some(_)) => {
             if baka.subcommand.is_none() {
                 return;

@@ -40,12 +40,13 @@ pub struct Plugin {
 
 impl PluginSetting {
     // input: (plugin-cmd-key)
-    // return: (plugin-cmd-key, plugin-cmd-exec)
-    pub fn exec(&self, other: &str) -> Option<(String, String)> {
+    // return: (plugin-cmd-exec, plugin-cmd-description, plugin-cmd-help)
+    pub fn exec(&self, other: &str) -> Option<(String, String, String)> {
         self.cmd.get_key_value(other).map(|get| {
             (
-                get.0.to_string(),
                 get.1.exec.replace("%path%", self.path()),
+                get.1.help.as_ref().unwrap_or(&String::new()).to_string(),
+                get.1.description.as_ref().unwrap_or(&String::new()).to_string(),
             )
         })
     }
