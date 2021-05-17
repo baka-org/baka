@@ -4,13 +4,38 @@ use std::{
     process::{Child, Command},
 };
 
-use crate::{parser::BakaArgs, plugins::plugins, setting::project};
+use crate::{
+    parser::BakaArgs,
+    plugins::plugins,
+};
 
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
         // Not found .baka.[json, toml, yaml]
-        ("-p", Some(_)) => unimplemented!(),
-        ("-l", Some(_)) => unimplemented!(),
+        ("-p", Some(_)) => {
+            if baka.subcommand.is_none() {
+                return;
+            }
+            let args = if let Some(args) = baka.args {
+                args
+            } else {
+                Vec::new()
+            };
+
+            let child = command_output(
+                &baka.baka_flags.unwrap()[1],
+                &baka.subcommand.as_ref().unwrap(),
+                args,
+            );
+            let wait_output = child.wait_with_output();
+
+            if let Ok(output) = wait_output {
+                println!("{}", String::from_utf8_lossy(&output.stdout));
+            } else if let Err(output) = wait_output {
+                eprintln!("Error: {}", output.to_string());
+            }
+        }
+        ("-l", Some(_)) => {}
         (_, _) => match_subcommand(baka),
     }
 }
