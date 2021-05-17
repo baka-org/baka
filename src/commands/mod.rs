@@ -9,37 +9,8 @@ use crate::{parser::BakaArgs, plugins::plugins, setting::root};
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
         // Not found .baka.[json, toml, yaml]
-        ("-p", Some(_)) => {
-            //TODO: check plugin
-            if baka.subcommand.is_none() {
-                return;
-            }
-
-            let mut find_plugin = plugins()
-                .into_iter()
-                .filter(|f| f.settings.name == baka.baka_flags.as_ref().unwrap()[1]);
-
-            if let Some(plugin) = find_plugin.next() {
-                for cmd in plugin.settings.cmd {
-                    let child = command_output(
-                        &cmd.0,
-                        &baka.subcommand.as_ref().unwrap(),
-                        baka.args.clone(),
-                    );
-
-                    let wait_output = child.wait_with_output();
-
-                    if let Ok(output) = wait_output {
-                        println!("{}", String::from_utf8_lossy(&output.stdout));
-                    } else if let Err(output) = wait_output {
-                        eprintln!("Error: {}", output.to_string());
-                    }
-                }
-            } else {
-            }
-        }
+        ("-p", Some(_)) => unimplemented!(),
         ("-l", Some(_)) => {
-            //TODO: check plugin
             if baka.subcommand.is_none() {
                 return;
             }
@@ -70,32 +41,7 @@ fn match_subcommand(baka: BakaArgs) {
         ("version", Some(_)) => println!("{}", include_str!("../../res/VERSION")),
 
         // Found .baka.[json, toml, yaml]
-        (_, _) => {
-            unimplemented!("I found bug");
-
-            /*
-            if baka.subcommand.is_none() {
-                return;
-            }
-
-            if let Some(project) = project() {
-                let child = command_output(
-                    &project.manager,
-                    &baka.subcommand.as_ref().unwrap(),
-                    baka.args,
-                );
-                let wait_output = child.wait_with_output();
-
-                if let Ok(output) = wait_output {
-                    println!("{}", String::from_utf8_lossy(&output.stdout));
-                } else if let Err(output) = wait_output {
-                    eprintln!("Error: {}", output.to_string());
-                }
-            } else {
-                eprintln!("Not found .baka.[json, toml, yaml]\nTry `baka [baka-flags] [package-manager-command] [package-manager-args]`")
-            }
-            */
-        }
+        (_, _) => unimplemented!("I found bug"),
     }
 }
 

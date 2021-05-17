@@ -38,20 +38,43 @@ pub struct Plugin {
     pub settings: PluginSetting,
 }
 
+impl PluginSetting {
+    // input: (plugin-cmd-key)
+    // return: (plugin-cmd-key, plugin-cmd-exec)
+    pub fn exec(&self, other: &str) -> Option<(String, String)> {
+        self.cmd.get_key_value(other).map(|get| {
+            (
+                get.0.to_string(),
+                get.1.exec.replace("%path%", self.path.path()),
+            )
+        })
+    }
+}
+
 impl PluginPath {
-    pub fn path(self) -> String {
+    pub fn path(&self) -> &str {
         if self.all.is_none() {
             if cfg!(target_os = "linux") {
-                self.linux.unwrap_or_else(|| panic!("Not found: `linux`"))
+                self.linux
+                    .as_ref()
+                    .unwrap_or_else(|| panic!("Not found: `linux`"))
             } else if cfg!(target_os = "windows") {
-                self.win.unwrap_or_else(|| panic!("Not found: `win`"))
+                self.win
+                    .as_ref()
+                    .unwrap_or_else(|| panic!("Not found: `win`"))
             } else if cfg!(target_os = "darwin") {
-                self.darwin.unwrap_or_else(|| panic!("Not found: `darwin`"))
+                self.darwin
+                    .as_ref()
+                    .unwrap_or_else(|| panic!("Not found: `darwin`"))
             } else {
-                self.other.unwrap_or_else(|| panic!("Not found: `other`"))
+                self.other
+                    .as_ref()
+                    .unwrap_or_else(|| panic!("Not found: `other`"))
             }
         } else {
-            self.all.unwrap_or_else(|| panic!("Not found: `all`"))
+            self.all
+                .as_ref()
+                .unwrap_or_else(|| panic!("Not found: `all`"))
         }
     }
 }
