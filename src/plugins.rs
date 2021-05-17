@@ -45,7 +45,7 @@ impl PluginSetting {
         self.cmd.get_key_value(other).map(|get| {
             (
                 self.path(),
-                get.1.exec,
+                get.1.exec.clone(),
                 get.1.help.as_ref().unwrap_or(&String::new()).to_string(),
                 get.1
                     .description

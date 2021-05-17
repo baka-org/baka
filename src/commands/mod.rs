@@ -20,6 +20,7 @@ pub fn match_baka_flags(baka: BakaArgs) {
             //println!("{:?}", plugin[0].settings.exec("search"))
         }
         ("-l", Some(_)) => {
+            //TODO: check plugin
             if baka.subcommand.is_none() {
                 return;
             }
@@ -30,20 +31,6 @@ pub fn match_baka_flags(baka: BakaArgs) {
             {
                 let child =
                     command_output(lang.as_str(), &baka.subcommand.as_ref().unwrap(), baka.args);
-                let wait_output = child.wait_with_output();
-
-                if let Ok(output) = wait_output {
-                    println!("{}", String::from_utf8_lossy(&output.stdout));
-                } else if let Err(output) = wait_output {
-                    eprintln!("Error: {}", output.to_string());
-                }
-            } else {
-                let name = plugin_find(baka.baka_flags.unwrap()[1].as_str());
-
-                println!("{}", name);
-
-                let child =
-                    command_output(name.as_str(), &baka.subcommand.as_ref().unwrap(), baka.args);
                 let wait_output = child.wait_with_output();
 
                 if let Ok(output) = wait_output {
