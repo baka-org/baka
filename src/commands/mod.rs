@@ -42,12 +42,16 @@ fn match_subcommand(baka: BakaArgs) {
         (_, _) => {
             unimplemented!("I found bug");
             /*
-            if baka.subcommand.is_none() || baka.args.is_none() {
+            if baka.subcommand.is_none() {
                 return;
             }
 
             if let Some(project) = project() {
-                let child = command_output(&project.manager,&baka.subcommand.as_ref().unwrap(), baka.args.as_ref().unwrap().to_vec());
+                let child = command_output(
+                    &project.manager,
+                    &baka.subcommand.as_ref().unwrap(),
+                    baka.args,
+                );
                 let wait_output = child.wait_with_output();
 
                 if let Ok(output) = wait_output {
