@@ -4,10 +4,7 @@ use std::{
     process::{Child, Command},
 };
 
-use crate::{
-    parser::BakaArgs,
-    plugins::plugins,
-};
+use crate::{parser::BakaArgs, plugins::plugins};
 
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
@@ -16,16 +13,11 @@ pub fn match_baka_flags(baka: BakaArgs) {
             if baka.subcommand.is_none() {
                 return;
             }
-            let args = if let Some(args) = baka.args {
-                args
-            } else {
-                Vec::new()
-            };
 
             let child = command_output(
                 &baka.baka_flags.unwrap()[1],
                 &baka.subcommand.as_ref().unwrap(),
-                args,
+                baka.args,
             );
             let wait_output = child.wait_with_output();
 
@@ -89,7 +81,7 @@ fn plugin_commands(plugin: Vec<String>) {
                 let child = command_output(
                     "git",
                     "clone",
-                    vec![plugin[1].clone(), path.to_string_lossy().to_string()],
+                    Some(vec![plugin[1].clone(), path.to_string_lossy().to_string()]),
                 );
                 let wait_output = child.wait_with_output();
 
@@ -133,7 +125,13 @@ fn plugin_commands(plugin: Vec<String>) {
     }
 }
 
-fn command_output(program_name: &str, subcommand: &str, args: Vec<String>) -> Child {
+fn command_output(program_name: &str, subcommand: &str, args: Option<Vec<String>>) -> Child {
+    let args = if let Some(args) = args {
+        args
+    } else {
+        Vec::new()
+    };
+
     Command::new(program_name)
         .arg(subcommand)
         .args(args)
