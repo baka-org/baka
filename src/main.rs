@@ -1,8 +1,4 @@
-use baka::{
-    commands::match_baka_flags,
-    parser::BakaArgs,
-    setting::init,
-};
+use baka::{commands::match_baka_flags, parser::BakaArgs, setting::init};
 use std::env::args;
 
 fn main() {
