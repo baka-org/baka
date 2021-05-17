@@ -122,15 +122,10 @@ fn plugin_commands(plugin: Vec<String>) {
 }
 
 fn command_output(program_name: &str, subcommand: &str, args: Option<Vec<String>>) -> Child {
-    let args = if let Some(args) = args {
-        args
-    } else {
-        Vec::new()
-    };
 
     Command::new(program_name)
         .arg(subcommand)
-        .args(args)
+        .args(args.unwrap_or_default())
         .spawn()
         .unwrap_or_else(|_| panic!("{} command failed to start", program_name))
 }
