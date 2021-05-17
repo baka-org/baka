@@ -1,3 +1,4 @@
+use crate::plugins::plugin_find;
 use crate::MY_DREAM;
 use sha2::Sha512;
 use std::{
@@ -6,7 +7,7 @@ use std::{
     process::{Child, Command},
 };
 
-use sha2::{Digest};
+use sha2::Digest;
 
 use crate::{parser::BakaArgs, plugins::plugins, setting::root};
 
@@ -17,7 +18,7 @@ pub fn match_baka_flags(baka: BakaArgs) {
             unimplemented!();
             //let plugin = plugins();
             //println!("{:?}", plugin[0].settings.exec("search"))
-        },
+        }
         ("-l", Some(_)) => {
             if baka.subcommand.is_none() {
                 return;
@@ -25,10 +26,24 @@ pub fn match_baka_flags(baka: BakaArgs) {
 
             if let Some(lang) = root()
                 .programming_languages
-                .get(&baka.baka_flags.unwrap()[1])
+                .get(&baka.baka_flags.as_ref().unwrap()[1])
             {
                 let child =
                     command_output(lang.as_str(), &baka.subcommand.as_ref().unwrap(), baka.args);
+                let wait_output = child.wait_with_output();
+
+                if let Ok(output) = wait_output {
+                    println!("{}", String::from_utf8_lossy(&output.stdout));
+                } else if let Err(output) = wait_output {
+                    eprintln!("Error: {}", output.to_string());
+                }
+            } else {
+                let name = plugin_find(baka.baka_flags.unwrap()[1].as_str());
+
+                println!("{}", name);
+
+                let child =
+                    command_output(name.as_str(), &baka.subcommand.as_ref().unwrap(), baka.args);
                 let wait_output = child.wait_with_output();
 
                 if let Ok(output) = wait_output {
@@ -126,7 +141,6 @@ fn plugin_commands(plugin: Vec<String>) {
 }
 
 fn command_output(program_name: &str, subcommand: &str, args: Option<Vec<String>>) -> Child {
-
     Command::new(program_name)
         .arg(subcommand)
         .args(args.unwrap_or_default())

@@ -41,12 +41,17 @@ pub struct Plugin {
 impl PluginSetting {
     // input: (plugin-cmd-key)
     // return: (plugin-cmd-exec, plugin-cmd-description, plugin-cmd-help)
-    pub fn exec(&self, other: &str) -> Option<(String, String, String)> {
+    pub fn exec(&self, other: &str) -> Option<(&str, String, String, String)> {
         self.cmd.get_key_value(other).map(|get| {
             (
-                get.1.exec.replace("%path%", self.path()),
+                self.path(),
+                get.1.exec,
                 get.1.help.as_ref().unwrap_or(&String::new()).to_string(),
-                get.1.description.as_ref().unwrap_or(&String::new()).to_string(),
+                get.1
+                    .description
+                    .as_ref()
+                    .unwrap_or(&String::new())
+                    .to_string(),
             )
         })
     }
@@ -54,27 +59,40 @@ impl PluginSetting {
     pub fn path(&self) -> &str {
         if self.path.all.is_none() {
             if cfg!(target_os = "linux") {
-                self.path.linux
+                self.path
+                    .linux
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `linux`"))
             } else if cfg!(target_os = "windows") {
-                self.path.win
+                self.path
+                    .win
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `win`"))
             } else if cfg!(target_os = "darwin") {
-                self.path.darwin
+                self.path
+                    .darwin
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `darwin`"))
             } else {
-                self.path.other
+                self.path
+                    .other
                     .as_ref()
                     .unwrap_or_else(|| panic!("Not found: `other`"))
             }
         } else {
-            self.path.all
+            self.path
+                .all
                 .as_ref()
                 .unwrap_or_else(|| panic!("Not found: `all`"))
         }
+    }
+}
+
+pub fn plugin_find(other: &str) -> Option<Plugin> {
+    if let Some(plugin) = plugins().into_iter().find(|f| &f.settings.name == other) {
+        Some(plugin)
+    } else {
+        None
     }
 }
 
