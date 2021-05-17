@@ -11,6 +11,8 @@ pub mod parser;
 pub mod plugins;
 pub mod setting;
 
+const MY_DREAM: &str = "여친생겼으면";
+
 pub fn debug() {
     let root = root();
     let project = project();

@@ -1,8 +1,12 @@
+use crate::MY_DREAM;
+use sha2::Sha512;
 use std::{
     env, fs,
     path::PathBuf,
     process::{Child, Command},
 };
+
+use sha2::{Digest};
 
 use crate::{parser::BakaArgs, plugins::plugins, setting::root};
 
@@ -59,7 +63,17 @@ fn plugin_commands(plugin: Vec<String>) {
             let plugins_var = env::var("baka_plugins").unwrap();
             let mut path = PathBuf::from(plugins_var);
             if let Some(name) = plugin[1].split('/').last() {
-                path.push(name.replace(".git", ""));
+                let mut hasher = Sha512::new();
+                hasher.update(format!("{}-{}", MY_DREAM, name.replace(".git", "")).as_bytes());
+                path.push(
+                    hasher
+                        .finalize()
+                        .to_vec()
+                        .into_iter()
+                        .map(|x| x.to_string())
+                        .collect::<String>(),
+                );
+
                 let child = command_output(
                     "git",
                     "clone",
