@@ -88,12 +88,10 @@ impl PluginSetting {
     }
 }
 
-pub fn plugin_find(other: &str) -> Option<Plugin> {
-    if let Some(plugin) = plugins().into_iter().find(|f| &f.settings.name == other) {
-        Some(plugin)
-    } else {
-        None
-    }
+pub fn plugins_find(other: &str) -> Option<Plugin> {
+    plugins()
+        .into_iter()
+        .find(|f| f.settings.name == other)
 }
 
 pub fn plugins() -> Vec<Plugin> {
@@ -130,7 +128,9 @@ pub fn plugins() -> Vec<Plugin> {
                     }
                 };
 
-                if plugins.iter().any(|f: &Plugin| f.settings == serde) { continue; }
+                if plugins.iter().any(|f: &Plugin| f.settings == serde) {
+                    continue;
+                }
 
                 plugins.push(Plugin {
                     path,
