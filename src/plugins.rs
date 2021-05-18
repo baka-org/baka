@@ -130,6 +130,8 @@ pub fn plugins() -> Vec<Plugin> {
                     }
                 };
 
+                if plugins.iter().any(|f: &Plugin| f.settings == serde) { continue; }
+
                 plugins.push(Plugin {
                     path,
                     settings: serde,
