@@ -1,14 +1,20 @@
 use crate::MY_DREAM;
 use sha2::Sha512;
 use std::{
-    env, fs,
+    env,
+    env::consts::OS,
+    fs,
     path::PathBuf,
-    process::{Child, Command},
+    process::{Child, Command, Stdio},
 };
 
 use sha2::Digest;
 
-use crate::{parser::BakaArgs, plugins::plugins, setting::root};
+use crate::{
+    parser::BakaArgs,
+    plugins::plugins,
+    setting::{project, root},
+};
 
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
@@ -50,7 +56,56 @@ fn match_subcommand(baka: BakaArgs) {
         ("version", Some(_)) => println!("{}", include_str!("../../res/VERSION")),
 
         // Found .baka.[json, toml, yaml]
-        (_, _) => unimplemented!("I found bug"),
+        (command, args) => custon_command(command, &args),
+    }
+}
+
+fn custon_command(command: &str, args: &Option<Vec<String>>) {
+    let run_command = move |manager: String| {
+        for plugin in plugins() {
+            if plugin.settings.name != manager {
+                println!("Couldn't find manager")
+            } else {
+                for (name, content) in plugin.settings.cmd.iter() {
+                    if name == command {
+                        let exec_command = content.exec.clone();
+                        let plugin_path = plugin.settings.path.clone();
+                        let path = match plugin_path.all {
+                            None => match OS {
+                                "macos" | "ios" => plugin_path.darwin,
+                                "linux" | "android" => plugin_path.linux,
+                                "windows" => plugin_path.win,
+                                _ => plugin_path.other,
+                            },
+                            Some(ref value) => Some(value.to_string()),
+                        };
+
+                        let splited = exec_command.split(" ").map(|cmd| {
+                            cmd.replace("%path%", path.as_ref().unwrap_or(&"".to_string()).as_str())
+                        });
+
+                        Command::new(splited[0])
+                            .args(args.as_ref().unwrap_or(&Vec::new()))
+                            .stdout(Stdio::inherit())
+                            .stdin(Stdio::inherit())
+                            .stderr(Stdio::inherit())
+                            .spawn()
+                            .expect("Failed to run a command.");
+                    }
+                }
+            }
+        }
+    };
+
+    match project() {
+        Some(proj) => {
+            let manager = proj.manager;
+            run_command(manager);
+        }
+        None => {
+            // TODO: Make this to use arg-set manager
+            println!("Project setting not found.")
+        }
     }
 }
 
@@ -88,7 +143,7 @@ fn plugin_commands(plugin: Vec<String>) {
 
                 if let Ok(output) = wait_output {
                     println!("{}", String::from_utf8_lossy(&output.stdout));
-                    println!("Add {} plugin!", name.replace(".git", ""));
+                    println!("Added plugin {}!", name.replace(".git", ""));
                 } else if let Err(output) = wait_output {
                     eprintln!("Error: {}", output.to_string());
                 }
@@ -104,7 +159,7 @@ fn plugin_commands(plugin: Vec<String>) {
             if let Some(plugin) = find_plugin.next() {
                 let remove = fs::remove_dir_all(plugin.path);
                 if remove.is_ok() {
-                    println!("Remove {} plugin...", plugin.settings.name);
+                    println!("Removed plugin {}!", plugin.settings.name);
                 } else if remove.is_err() {
                     println!("Error: {}", remove.unwrap_err());
                 }
