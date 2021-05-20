@@ -1,5 +1,3 @@
-use crate::MY_DREAM;
-use sha2::Sha512;
 use std::{
     env,
     env::consts::OS,
@@ -8,24 +6,24 @@ use std::{
     process::{Child, Command, Stdio},
 };
 
-use sha2::Digest;
+use sha2::{Digest, Sha512};
 
 use crate::{
     parser::BakaArgs,
     plugins::plugins,
     setting::{project, root},
+    MY_DREAM,
 };
 
 pub fn match_baka_flags(baka: BakaArgs) {
     match baka.baka_flags() {
         // Not found .baka.[json, toml, yaml]
-        ("-p", Some(_)) => {
-            unimplemented!();
-            //let plugin = plugins();
-            //println!("{:?}", plugin[0].settings.exec("search"))
+        "-p" => {
+            if let Some(subcommand) = baka.subcommand {
+                custon_command(&subcommand, &baka.args);
+            }
         }
-        ("-l", Some(_)) => {
-            //TODO: check plugin
+        "-l" => {
             if baka.subcommand.is_none() {
                 return;
             }
@@ -34,18 +32,10 @@ pub fn match_baka_flags(baka: BakaArgs) {
                 .programming_languages
                 .get(&baka.baka_flags.as_ref().unwrap()[1])
             {
-                let child =
-                    command_output(lang.as_str(), &baka.subcommand.as_ref().unwrap(), baka.args);
-                let wait_output = child.wait_with_output();
-
-                if let Ok(output) = wait_output {
-                    println!("{}", String::from_utf8_lossy(&output.stdout));
-                } else if let Err(output) = wait_output {
-                    eprintln!("Error: {}", output.to_string());
-                }
+                custon_command(lang, &baka.args);
             }
         }
-        (_, _) => match_subcommand(baka),
+        _ => match_subcommand(baka),
     }
 }
 
@@ -64,34 +54,34 @@ fn custon_command(command: &str, args: &Option<Vec<String>>) {
     let run_command = move |manager: String| {
         for plugin in plugins() {
             if plugin.settings.name != manager {
-                println!("Couldn't find manager")
-            } else {
-                for (name, content) in plugin.settings.cmd.iter() {
-                    if name == command {
-                        let exec_command = content.exec.clone();
-                        let plugin_path = plugin.settings.path.clone();
-                        let path = match plugin_path.all {
-                            None => match OS {
-                                "macos" | "ios" => plugin_path.darwin,
-                                "linux" | "android" => plugin_path.linux,
-                                "windows" => plugin_path.win,
-                                _ => plugin_path.other,
-                            },
-                            Some(ref value) => Some(value.to_string()),
-                        };
+                continue;
+            }
+            for (name, content) in plugin.settings.cmd.iter() {
+                if name == command {
+                    let exec_command = content.exec.clone();
+                    let plugin_path = plugin.settings.path.clone();
+                    let path = match plugin_path.all {
+                        None => match OS {
+                            "macos" | "ios" => plugin_path.darwin,
+                            "linux" | "android" => plugin_path.linux,
+                            "windows" => plugin_path.win,
+                            _ => plugin_path.other,
+                        },
+                        Some(ref value) => Some(value.to_string()),
+                    };
 
-                        let splited = exec_command.split(" ").map(|cmd| {
-                            cmd.replace("%path%", path.as_ref().unwrap_or(&"".to_string()).as_str())
-                        });
+                    let exec = exec_command
+                        .replace("%path%", path.as_ref().unwrap_or(&String::new()).as_str());
+                    let mut splited = exec.split(' ');
 
-                        Command::new(splited[0])
-                            .args(args.as_ref().unwrap_or(&Vec::new()))
-                            .stdout(Stdio::inherit())
-                            .stdin(Stdio::inherit())
-                            .stderr(Stdio::inherit())
-                            .spawn()
-                            .expect("Failed to run a command.");
-                    }
+                    Command::new(splited.next().unwrap_or_else(|| panic!("")))
+                        .arg(splited.next().unwrap_or(&String::new()))
+                        .args(args.as_ref().unwrap_or(&Vec::new()))
+                        .stdout(Stdio::inherit())
+                        .stdin(Stdio::inherit())
+                        .stderr(Stdio::inherit())
+                        .spawn()
+                        .expect("Failed to run a command.");
                 }
             }
         }
@@ -169,12 +159,22 @@ fn plugin_commands(plugin: Vec<String>) {
             println!("Plugin list:");
 
             for plugin in plugins() {
-                println!(
+                print!(
                     " ㄴname: {}   version: {}   path: {}",
                     plugin.settings.name,
                     plugin.settings.version,
                     plugin.path.to_string_lossy()
                 );
+                print!("\n\r\tㄴCommand list:");
+                for p in &plugin.settings.cmd {
+                    print!(
+                        "\r\n\t\tㄴCommand: {}   Help: {}  Description: {}",
+                        p.0,
+                        p.1.help.as_ref().unwrap_or(&"None".to_string()),
+                        p.1.description.as_ref().unwrap_or(&"None".to_string())
+                    );
+                }
+                println!();
             }
         }
         _ => {}

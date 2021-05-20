@@ -62,10 +62,8 @@ impl BakaArgs {
         BakaArgs::new(baka_flags, subcommand, argss)
     }
 
-    pub fn baka_flags(&self) -> (&str, Option<&Self>) {
-        self.baka_flags
-            .as_ref()
-            .map_or(("", None), |f| (f[0].as_str(), Some(self)))
+    pub fn baka_flags(&self) -> &str {
+        self.baka_flags.as_ref().map_or("", |f| f[0].as_str())
     }
 
     pub fn subcommand(&self) -> (&str, Option<Vec<String>>) {
