@@ -1,18 +1,17 @@
-use std::{
-    env,
-    env::consts::OS,
-    fs,
-    path::PathBuf,
-    process::{Child, Command, Stdio},
-};
-
-use sha2::{Digest, Sha512};
-
 use crate::{
     parser::BakaArgs,
     plugins::plugins,
     setting::{project, root},
     MY_DREAM,
+};
+use std::{
+    collections::hash_map::DefaultHasher,
+    env,
+    env::consts::OS,
+    fs,
+    hash::Hasher,
+    path::PathBuf,
+    process::{Child, Command, Stdio},
 };
 
 pub fn match_baka_flags(baka: BakaArgs) {
@@ -113,16 +112,9 @@ fn plugin_commands(plugin: Vec<String>) {
             let plugins_var = env::var("baka_plugins").unwrap();
             let mut path = PathBuf::from(plugins_var);
             if let Some(name) = plugin[1].split('/').last() {
-                let mut hasher = Sha512::new();
-                hasher.update(format!("{}-{}", MY_DREAM, name.replace(".git", "")).as_bytes());
-                path.push(
-                    hasher
-                        .finalize()
-                        .to_vec()
-                        .into_iter()
-                        .map(|x| x.to_string())
-                        .collect::<String>(),
-                );
+                let mut hasher = DefaultHasher::new();
+                hasher.write(format!("{}-{}", MY_DREAM, name.replace(".git", "")).as_bytes());
+                path.push(hasher.finish().to_string());
 
                 let child = command_output(
                     "git",
