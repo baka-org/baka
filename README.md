@@ -7,14 +7,14 @@
 
 
 * .baka.json
- ```
+ ```json
  {
 	"manager": "cargo" // The package manager name registered with the plugin
 }
  ```
  
  * config.json
- ```
+ ```json
  {
 	"language": "en-us", // language
 	"plugins": ["%name%-%version%"], // plugin list
@@ -26,7 +26,7 @@
 
 
 * plugin.json
-```
+```json
 {
 	"name": "[package-manager-name]", // package manager name
 	"version": "1.0", // version
@@ -47,12 +47,12 @@
 		}
 	},
 	"path": { 
-  // If all is null, should have at least one of darwin, win, Linux, other
+  	// If all is null, should have at least one of darwin, win, Linux, other
 		"all": "",
-    "darwin": "",
-    "win": "",
-    "linux": "",
-    "other": "",
+    		"darwin": "",
+    		"win": "",
+    		"linux": "",
+    		"other": "",
 	}
 }
 ```
