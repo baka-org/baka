@@ -2,9 +2,9 @@
 **b**asic multiple p**a**c**k**age m**a**nager
 
 
-### Docs
+## Docs
 
-## Env
+### Env
 
 - `baka_root_setting`
     - Windows: %USERPROFILE%/.baka/config
@@ -13,7 +13,7 @@
     - Windows: %USERPROFILE%/.baka/plugins/*
     - Linux, Mac: $HOME/.baka/plugins/*
 
-## Commands Structure
+### Commands Structure
 
 - found .baka
 
