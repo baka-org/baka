@@ -66,7 +66,7 @@ baka [baka-flags] [package-manager-command] [package-manager-args]
 	"name": "[package-manager-name]", // package manager name
 	"version": "1.0", // version
 	"cmd": {
-		"install": { // subcommand name
+		"install": { // subCommand name
 			"exec": "%path% install",
 			"description": "Sth Sth", // subCommand description
 			"help": "Sth Sth" // subCommand help 
