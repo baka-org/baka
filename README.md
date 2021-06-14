@@ -3,6 +3,41 @@
 
 
 ### Docs
+
+## Env
+
+- `baka_root_setting`
+    - Windows: %USERPROFILE%/.baka/config
+    - Linux, Mac: $HOME/.baka/config
+- `baka_plugins` (Just use plugin command)
+    - Windows: %USERPROFILE%/.baka/plugins/*
+    - Linux, Mac: $HOME/.baka/plugins/*
+
+## Commands Structure
+
+- found .baka
+
+baka [command] [flag] `or` baka [baka-flags] [package-manager-command] [package-manager-args]
+
+- not
+
+baka [baka-flags] [package-manager-command] [package-manager-args]
+
+- Commands
+    - baka [baka-flags] [package-manager-command] [package-manager-args]
+    - baka plugin
+        - add [git-url]
+        - remove [package-manager-name]
+        - list
+    - baka help
+    - baka version
+    - baka upgrade
+- baka-flags
+    - -p [package-manager-name]
+    - -l [language-name] (for multiple language config)
+
+
+### Files
 * Available data formats are json, yaml, and toml.
 
 
