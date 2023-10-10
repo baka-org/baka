@@ -2,7 +2,7 @@
 name = "baka"
 version = "0.1.0"
 edition = "2018"
-authors = ["Catry <catry.me@gmail.com>"]
+authors = ["Catry <catry.me@gmail.com>", "Helloyunho <me@helloyunho.xyz>"]
 categories = ["command-line-utilities", "development-tools"]
 description = "basic multiple package manager"
 homepage = "https://github.com/baka-org/baka"
