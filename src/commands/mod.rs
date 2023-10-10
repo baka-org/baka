@@ -19,7 +19,7 @@ pub fn match_baka_flags(baka: BakaArgs) {
         // Not found .baka.[json, toml, yaml]
         "-p" => {
             if let Some(subcommand) = baka.subcommand {
-                custon_command(&subcommand, &baka.args);
+                custom_command(&subcommand, &baka.args);
             }
         }
         "-l" => {
@@ -31,7 +31,7 @@ pub fn match_baka_flags(baka: BakaArgs) {
                 .programming_languages
                 .get(&baka.baka_flags.as_ref().unwrap()[1])
             {
-                custon_command(lang, &baka.args);
+                custom_command(lang, &baka.args);
             }
         }
         _ => match_subcommand(baka),
@@ -45,11 +45,11 @@ fn match_subcommand(baka: BakaArgs) {
         ("version", Some(_)) => println!("{}", include_str!("../../res/VERSION")),
 
         // Found .baka.[json, toml, yaml]
-        (command, args) => custon_command(command, &args),
+        (command, args) => custom_command(command, &args),
     }
 }
 
-fn custon_command(command: &str, args: &Option<Vec<String>>) {
+fn custom_command(command: &str, args: &Option<Vec<String>>) {
     let run_command = move |manager: String| {
         for plugin in plugins() {
             if plugin.settings.name != manager {
