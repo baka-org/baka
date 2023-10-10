@@ -128,6 +128,9 @@ pub fn init() {
     if env::var("baka_plugins").is_err() {
         env::set_var("baka_plugins", config_path(true, Some("plugins"), None));
     }
+
+    // flag
+    crate::commands::match_baka_flags(crate::parser::BakaArgs::parse_args(std::env::args()));
 }
 
 fn config_path(baka_folder: bool, folder_name: Option<&str>, file_name: Option<&str>) -> PathBuf {
