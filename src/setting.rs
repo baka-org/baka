@@ -91,7 +91,7 @@ pub fn init() {
     //make .baka folder
     make_file(true, None, None, None);
     //make config file (global config file)
-    let check_extension = vec!["config.json", "config.toml", "config.yaml"];
+    let check_extension = ["config.json", "config.toml", "config.yaml"];
     let mut baka_folder = fs::read_dir(config_path(true, None, None).as_path()).unwrap();
     if !baka_folder.any(|x| check_extension.contains(&x.unwrap().file_name().to_str().unwrap())) {
         make_file(

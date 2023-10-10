@@ -74,7 +74,7 @@ fn custom_command(command: &str, args: &Option<Vec<String>>) {
                     let mut splited = exec.split(' ');
 
                     Command::new(splited.next().unwrap_or_else(|| panic!("")))
-                        .arg(splited.next().unwrap_or(&String::new()))
+                        .arg(splited.next().unwrap_or(""))
                         .args(args.as_ref().unwrap_or(&Vec::new()))
                         .stdout(Stdio::inherit())
                         .stdin(Stdio::inherit())
@@ -127,7 +127,7 @@ fn plugin_commands(plugin: Vec<String>) {
                     println!("{}", String::from_utf8_lossy(&output.stdout));
                     println!("Added plugin {}!", name.replace(".git", ""));
                 } else if let Err(output) = wait_output {
-                    eprintln!("Error: {}", output.to_string());
+                    eprintln!("Error: {}", output);
                 }
             }
         }
